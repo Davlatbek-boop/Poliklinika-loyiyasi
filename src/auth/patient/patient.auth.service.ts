@@ -54,7 +54,6 @@ export class PatientAuthService {
       httpOnly: true,
       maxAge: Number(process.env.REFRESH_COOKIE_TIME),
     });
-    console.log(1);
 
     patient.hashed_refresh_token = await bcrypt.hash(tokens.refreshToken, 7);
     await patient.save();
@@ -142,7 +141,7 @@ export class PatientAuthService {
       email: patient.email,
       phone: patient.phone,
       is_active: patient.is_active,
-      role: 'patient',
+      role: 'Patient',
     };
 
     const accessToken = await this.jwtService.sign(payload, {

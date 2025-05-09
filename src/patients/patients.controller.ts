@@ -1,28 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { PatientsService } from './patients.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { Roles } from '../common/decorators/roles-auth.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { PatientGuard } from '../common/guards/patient.guard';
 
 @Controller('patients')
-@ApiTags('Patients')  // Bu controller uchun swagger hujjatiga teg qo‘shadi
+@ApiTags('Patients') // Bu controller uchun swagger hujjatiga teg qo‘shadi
 export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
 
-  @Post()
-  @ApiOperation({ summary: 'Yangi bemor yaratish' }) // Operatsiya haqida izoh
-  @ApiResponse({
-    status: 201,
-    description: 'Bemor muvaffaqiyatli yaratildi',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Noto‘g‘ri ma\'lumotlar',
-  })
-  create(@Body() createPatientDto: CreatePatientDto) {
-    return this.patientsService.create(createPatientDto);
-  }
-
+  @Roles('Admin', 'Creator', 'Director')
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
   @Get()
   @ApiOperation({ summary: 'Bemorlar ro‘yxatini olish' })
   @ApiResponse({
@@ -33,6 +35,8 @@ export class PatientsController {
     return this.patientsService.findAll();
   }
 
+  @UseGuards(PatientGuard)
+  @UseGuards(AuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Bemorni ID orqali topish' })
   @ApiParam({ name: 'id', description: 'Bemorning unikal identifikatori' })
@@ -48,6 +52,9 @@ export class PatientsController {
     return this.patientsService.findOne(+id);
   }
 
+
+  @UseGuards(PatientGuard)
+  @UseGuards(AuthGuard)
   @Patch(':id')
   @ApiOperation({ summary: 'Bemorni yangilash' })
   @ApiParam({ name: 'id', description: 'Yangilanadigan bemorning IDsi' })
@@ -57,12 +64,16 @@ export class PatientsController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Noto‘g‘ri ma\'lumotlar',
+    description: "Noto‘g‘ri ma'lumotlar",
   })
   update(@Param('id') id: string, @Body() updatePatientDto: UpdatePatientDto) {
     return this.patientsService.update(+id, updatePatientDto);
   }
 
+
+  @Roles('Admin', 'Creator', 'Director')
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
   @Delete(':id')
   @ApiOperation({ summary: 'Bemorni o‘chirish' })
   @ApiParam({ name: 'id', description: 'O‘chiriladigan bemorning IDsi' })
@@ -76,5 +87,10 @@ export class PatientsController {
   })
   remove(@Param('id') id: string) {
     return this.patientsService.remove(+id);
+  }
+
+  @Get('activate/:link')
+  activatePatient(@Param('link') link: string) {
+    return this.patientsService.activatePatient(link);
   }
 }

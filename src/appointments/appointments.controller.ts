@@ -6,18 +6,26 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Appointment } from './models/appointment.model';
+import { Roles } from '../common/decorators/roles-auth.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { AuthGuard } from '../common/guards/auth.guard';
 
 @ApiTags('Uchrashuvlar') // Swagger tag
 @Controller('appointments')
 export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
 
+
+  @Roles('Admin', 'Creator', 'Receptionist', 'Patient')
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
   @Post()
   @ApiOperation({ summary: 'Yangi uchrashuv yaratish' })
   @ApiResponse({
@@ -29,6 +37,10 @@ export class AppointmentsController {
     return this.appointmentsService.create(createAppointmentDto);
   }
 
+
+  @Roles('Admin', 'Creator', 'Receptionist')
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
   @Get()
   @ApiOperation({ summary: 'Barcha uchrashuvlarni olish' })
   @ApiResponse({
@@ -40,6 +52,10 @@ export class AppointmentsController {
     return this.appointmentsService.findAll();
   }
 
+
+  @Roles('Admin', 'Creator', 'Receptionist')
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'ID bo‘yicha uchrashuvni olish' })
   @ApiResponse({
@@ -52,6 +68,10 @@ export class AppointmentsController {
     return this.appointmentsService.findOne(+id);
   }
 
+
+  @Roles('Admin', 'Creator', 'Receptionist')
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
   @Patch(':id')
   @ApiOperation({ summary: 'Uchrashuvni yangilash' })
   @ApiResponse({
@@ -66,6 +86,10 @@ export class AppointmentsController {
     return this.appointmentsService.update(+id, updateAppointmentDto);
   }
 
+
+  @Roles('Admin', 'Creator', 'Receptionist')
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
   @Delete(':id')
   @ApiOperation({ summary: 'Uchrashuvni o‘chirish' })
   @ApiResponse({ status: 200, description: 'Uchrashuv o‘chirildi' })

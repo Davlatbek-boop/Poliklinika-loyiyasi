@@ -53,7 +53,6 @@ export class DoctorAuthService {
       httpOnly: true,
       maxAge: Number(process.env.REFRESH_COOKIE_TIME),
     });
-    console.log(1);
 
     doctor.hashed_refresh_token = await bcrypt.hash(tokens.refreshToken, 7);
     await doctor.save();

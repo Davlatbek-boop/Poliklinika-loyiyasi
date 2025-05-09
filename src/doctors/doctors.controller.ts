@@ -1,46 +1,53 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { DoctorsService } from './doctors.service';
-import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
+import { Roles } from '../common/decorators/roles-auth.decorator';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { DoctorGuard } from '../common/guards/doctor.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
 
-@ApiTags('Shifokorlar') // Swagger bo'lim nomi
+@ApiTags('Shifokorlar')
 @Controller('doctors')
 export class DoctorsController {
   constructor(private readonly doctorsService: DoctorsService) {}
 
-  @Post()
-  @ApiOperation({ summary: 'Yangi shifokor yaratish' })
-  create(@Body() createDoctorDto: CreateDoctorDto) {
-    return this.doctorsService.create(createDoctorDto);
-  }
-
+  @Roles('Admin', 'Creator', 'Director')
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
   @Get()
   @ApiOperation({ summary: 'Barcha shifokorlarni ko‘rish' })
   findAll() {
     return this.doctorsService.findAll();
   }
 
+  @UseGuards(DoctorGuard)
+  @UseGuards(AuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Shifokorni ID orqali ko‘rish' })
   findOne(@Param('id') id: string) {
     return this.doctorsService.findOne(+id);
   }
 
+  @UseGuards(DoctorGuard)
+  @UseGuards(AuthGuard)
   @Patch(':id')
   @ApiOperation({ summary: 'Shifokor maʼlumotlarini tahrirlash' })
   update(@Param('id') id: string, @Body() updateDoctorDto: UpdateDoctorDto) {
     return this.doctorsService.update(+id, updateDoctorDto);
   }
 
+  @Roles('Admin', 'Creator', 'Director')
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
   @Delete(':id')
   @ApiOperation({ summary: 'Shifokorni o‘chirish' })
   remove(@Param('id') id: string) {

@@ -24,10 +24,24 @@ import { Role } from './roles/models/role.model';
 import { StaffsModule } from './staffs/staffs.module';
 import { Staff } from './staffs/models/staff.model';
 import { AuthModule } from './auth/auth.module';
+import { TelegrafModule } from 'nestjs-telegraf';
+import { BOT_NAME } from './app.constants';
+import { BotModule } from './bot/bot.module';
+import { Bot } from './bot/model/bot.model';
+import { Otp } from './staffs/models/otp.model';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+
+    TelegrafModule.forRootAsync({
+      botName: BOT_NAME,
+      useFactory: () => ({
+        token: process.env.BOT_TOKEN!,
+        middlevares: [],
+        include: [BotModule],
+      }),
+    }),
 
     SequelizeModule.forRoot({
       dialect: 'postgres',
@@ -48,6 +62,8 @@ import { AuthModule } from './auth/auth.module';
         Prescription,
         Role,
         Staff,
+        Bot,
+        Otp,
       ],
       autoLoadModels: true,
       sync: { alter: true },
@@ -65,6 +81,7 @@ import { AuthModule } from './auth/auth.module';
     RolesModule,
     StaffsModule,
     AuthModule,
+    BotModule
   ],
   controllers: [],
   providers: [],

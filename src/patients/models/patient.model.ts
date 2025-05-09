@@ -4,6 +4,8 @@ import { Gender } from '../../enums/gender.enum';
 import { LabTest } from '../../lab-tests/models/lab-test.model';
 import { Appointment } from '../../appointments/models/appointment.model';
 import { Payment } from '../../payments/models/payment.model';
+import { UUIDV4 } from 'sequelize';
+import { UUID } from 'crypto';
 
 interface IPatientCreationAttr {
   full_name: string;
@@ -67,7 +69,10 @@ export class Patient extends Model<Patient, IPatientCreationAttr> {
     example: 'abc123link',
     description: 'Faollashtirish havolasi',
   })
-  @Column({ type: DataType.STRING, defaultValue: '' })
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+  })
   declare activation_link: string;
 
   @ApiProperty({
