@@ -1,8 +1,16 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { PatientAuthService } from './patient.auth.service';
 import { CreatePatientDto } from '../../patients/dto/create-patient.dto';
 import { Request, Response } from 'express';
-import { LoginPatientDto } from './models/login-patient.dto';
+import { LoginPatientDto } from './dto/login-patient.dto';
 import { CookieGetter } from '../../common/decorators/cookie-getter.decorator';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from '../../common/guards/auth.guard';
@@ -23,7 +31,6 @@ export class PatientAuthController {
     return this.patientAuthService.registratsiya(createPatientDto);
   }
 
-
   @Post('login')
   @ApiOperation({ summary: 'Bemor login qilish' })
   @ApiResponse({ status: 200, description: 'Muvaffaqiyatli login' })
@@ -32,7 +39,6 @@ export class PatientAuthController {
     return this.patientAuthService.login(loginPatientDto, res);
   }
 
-  @UseGuards(AuthGuard)
   @Get('logout')
   @ApiOperation({ summary: 'Bemor logout qilish' })
   @ApiResponse({ status: 200, description: 'Muvaffaqiyatli logout' })
@@ -40,7 +46,6 @@ export class PatientAuthController {
     return this.patientAuthService.logOut(req, res);
   }
 
-  @UseGuards(AuthGuard)
   @Post('refresh-token')
   @ApiOperation({ summary: 'Refresh token orqali access token yangilash' })
   @ApiResponse({

@@ -22,6 +22,11 @@ import { PatientGuard } from '../common/guards/patient.guard';
 export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
 
+  @Get('/:id/details')
+  async getPatientMedicalDetails(@Param('id') id: string) {
+    return this.patientsService.getPatientMedicalDetails(+id);
+  }
+
   @Roles('Admin', 'Creator', 'Director')
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)

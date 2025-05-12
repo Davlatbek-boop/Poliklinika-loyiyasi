@@ -18,7 +18,7 @@ interface IMedicalRecordCreationAttr {
   diagnosis: string;
 }
 
-@Table({ tableName: 'medical-records' })
+@Table({ tableName: 'medical_records' })
 export class MedicalRecord extends Model<
   MedicalRecord,
   IMedicalRecordCreationAttr

@@ -10,7 +10,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Doctor } from '../../doctors/models/doctor.model';
 import { DoctorsService } from '../../doctors/doctors.service';
 import { CreateDoctorDto } from '../../doctors/dto/create-doctor.dto';
-import { LoginDoctorDto } from './models/login-doctor.dto';
+import { LoginDoctorDto } from './dto/login-doctor.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
@@ -86,31 +86,36 @@ export class DoctorAuthService {
 
     res.clearCookie('refresh-token-doctor', { httpOnly: true });
 
-    doctor.hashed_refresh_token = ""
-    await doctor.save()
+    doctor.hashed_refresh_token = '';
+    await doctor.save();
 
     res.status(200).send({
-        message: `Doctor ${doctor.full_name} logged out successfully`
-    })
+      message: `Doctor ${doctor.full_name} logged out successfully`,
+    });
   }
 
   async refreshToken(refreshToken: string, res: Response) {
-    const decodeRefreshToken = await this.jwtService.decode(refreshToken)
+    const decodeRefreshToken = await this.jwtService.decode(refreshToken);
 
-    if(!decodeRefreshToken){
-      throw new UnauthorizedException("Refresh tokenda xatolik")
+    if (!decodeRefreshToken) {
+      throw new UnauthorizedException('Refresh tokenda xatolik');
     }
 
-    const doctor = await this.doctorService.findByEmail(decodeRefreshToken.email)
+    const doctor = await this.doctorService.findByEmail(
+      decodeRefreshToken.email,
+    );
 
-    if(!doctor || !doctor.hashed_refresh_token){
-      throw new NotFoundException("Doktor not found")
+    if (!doctor || !doctor.hashed_refresh_token) {
+      throw new NotFoundException('Doktor not found');
     }
 
-    const validRefreshToken = await bcrypt.compare(refreshToken, doctor.hashed_refresh_token)
+    const validRefreshToken = await bcrypt.compare(
+      refreshToken,
+      doctor.hashed_refresh_token,
+    );
 
-    if(!validRefreshToken){
-      throw new ForbiddenException("Forbidden")
+    if (!validRefreshToken) {
+      throw new ForbiddenException('Forbidden');
     }
 
     const tokens = await this.tokensGenerate(doctor);
@@ -129,9 +134,6 @@ export class DoctorAuthService {
     });
   }
 
-
-
-  
   async tokensGenerate(doctor: Doctor) {
     const payload = {
       id: doctor.id,

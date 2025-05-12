@@ -22,7 +22,7 @@ import { AuthGuard } from '../common/guards/auth.guard';
 export class MedicalRecordsController {
   constructor(private readonly medicalRecordsService: MedicalRecordsService) {}
 
-  @Roles('Doctor')
+  @Roles('doctor')
   @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Post()

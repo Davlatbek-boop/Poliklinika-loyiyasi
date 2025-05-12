@@ -11,7 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import { CreatePatientDto } from '../../patients/dto/create-patient.dto';
 import * as bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-import { LoginPatientDto } from './models/login-patient.dto';
+import { LoginPatientDto } from './dto/login-patient.dto';
 import { Patient } from '../../patients/models/patient.model';
 
 @Injectable()
@@ -34,7 +34,9 @@ export class PatientAuthService {
   }
 
   async login(loginPatientDto: LoginPatientDto, res: Response) {
-    const patient = await this.patientService.findByEmail(loginPatientDto.email);
+    const patient = await this.patientService.findByEmail(
+      loginPatientDto.email,
+    );
     if (!patient) {
       throw new BadRequestException("Email yoki Parol noto'g'ri");
     }

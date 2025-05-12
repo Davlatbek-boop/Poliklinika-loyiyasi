@@ -1,12 +1,21 @@
-import { Controller, Post, Body, Res, Get, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  Get,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { Response, Request } from 'express';
 import { CreateDoctorDto } from '../../doctors/dto/create-doctor.dto';
 import { DoctorAuthService } from './doctor.auth.service';
-import { LoginDoctorDto } from './models/login-doctor.dto';
+import { LoginDoctorDto } from './dto/login-doctor.dto';
 import { CookieGetter } from '../../common/decorators/cookie-getter.decorator';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Roles } from '../../common/decorators/roles-auth.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
 
 @ApiTags('Doctor Auth') // Swagger bo‘lim nomi
 @Controller('auth/doctor')
@@ -14,6 +23,7 @@ export class DoctorAuthController {
   constructor(private readonly doctorAuthService: DoctorAuthService) {}
 
   @Roles('Admin', 'Creator', 'Director')
+  @UseGuards(RolesGuard)
   @UseGuards(AuthGuard)
   @Post('registratsiya')
   @ApiOperation({ summary: 'Yangi shifokor ro‘yxatdan o‘tishi' })

@@ -10,7 +10,7 @@ import {
 import { StaffAuthService } from './staff.auth.service';
 import { CookieGetter } from '../../common/decorators/cookie-getter.decorator';
 import { CreateStaffDto } from '../../staffs/dto/create-staff.dto';
-import { LoginStaffDto } from './models/stuff-login.dto';
+import { LoginStaffDto } from './dto/stuff-login.dto';
 import { Request, Response } from 'express';
 import { Roles } from '../../common/decorators/roles-auth.decorator';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -41,14 +41,12 @@ export class StaffAuthController {
     return this.StaffAuthService.login(loginStaffDto, res);
   }
 
-
   @Get('logout')
   @ApiOperation({ summary: 'Xodim logout qilish' })
   @ApiResponse({ status: 200, description: 'Muvaffaqiyatli logout' })
   logOut(@Req() req: Request, @Res() res: Response) {
     return this.StaffAuthService.logOut(req, res);
   }
-
 
   @Post('refresh-token')
   @ApiOperation({ summary: 'Refresh token orqali access token yangilash' })

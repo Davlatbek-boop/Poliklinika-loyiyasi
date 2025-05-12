@@ -11,12 +11,15 @@ import * as bcrypt from 'bcrypt';
 import { InjectModel } from '@nestjs/sequelize';
 import { Patient } from './models/patient.model';
 import { MailService } from '../mail/mail.service';
+import { Sequelize } from 'sequelize-typescript';
+
 
 @Injectable()
 export class PatientsService {
   constructor(
     @InjectModel(Patient) private readonly patientModel: typeof Patient,
     private readonly mailService: MailService,
+    private readonly sequelize: Sequelize,
   ) {}
   async create(createPatientDto: CreatePatientDto) {
     const doctor = await this.findByEmail(createPatientDto.email);
@@ -85,5 +88,29 @@ export class PatientsService {
     return {
       message: 'Patient activated successfully',
     };
+  }
+
+
+  async getPatientMedicalDetails(patient_id: number) {
+    const query = `
+      SELECT 
+    mr.visit_date, 
+    mr.diagnosis, 
+    mr.treatment, 
+    m.name AS medication_name,
+    pr.dosage, 
+    pr.duration
+FROM patient p
+JOIN appointments a ON p.id = a."patientId"
+JOIN medical_records mr ON a.id = mr."appointmentId"
+JOIN prescriptions pr ON mr.id = pr."medicalRecordId"
+JOIN medications m ON pr."medicationId" = m.id
+WHERE p.id = 27;
+
+  `;
+
+    const [results, metadeta] = await this.sequelize.query(query);
+
+    return results;
   }
 }

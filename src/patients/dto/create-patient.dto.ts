@@ -6,6 +6,7 @@ import {
   IsDateString,
   IsEnum,
   IsNotEmpty,
+  IsStrongPassword,
 } from 'class-validator';
 import { Gender } from '../../enums/gender.enum';
 
@@ -21,8 +22,7 @@ export class CreatePatientDto {
   email: string;
 
   @ApiProperty({ example: 'password123', description: 'Parol' })
-  @IsString()
-  @IsNotEmpty()
+  @IsStrongPassword()
   password: string;
 
   @ApiProperty({ example: '+998901234567', description: 'Telefon raqami' })

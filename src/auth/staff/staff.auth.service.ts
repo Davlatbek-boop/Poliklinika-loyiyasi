@@ -10,7 +10,7 @@ import { StaffsService } from '../../staffs/staffs.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateStaffDto } from '../../staffs/dto/create-staff.dto';
 import * as bcrypt from 'bcrypt';
-import { LoginStaffDto } from './models/stuff-login.dto';
+import { LoginStaffDto } from './dto/stuff-login.dto';
 import { Request, Response } from 'express';
 import { Staff } from '../../staffs/models/staff.model';
 import { RolesService } from '../../roles/roles.service';
@@ -126,9 +126,6 @@ export class StaffAuthService {
       accessToken: tokens.accessToken,
     });
   }
-
-
-
 
   async tokensGenerate(staff: Staff) {
     const role = await this.rolesSevice.findOne(staff.roleId);

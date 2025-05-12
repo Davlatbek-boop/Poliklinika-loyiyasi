@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
@@ -19,6 +20,7 @@ import { BotService } from '../bot/bot.service';
 import * as uuid from 'uuid';
 import { decode, encode } from '../common/helpers/crypto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { StaffPasswordDto } from './dto/password.dto';
 
 @Injectable()
 export class StaffsService {
@@ -74,6 +76,27 @@ export class StaffsService {
 
   findByEmail(email: string) {
     return this.staffModel.findOne({ where: { email } });
+  }
+
+  async updatePassword(id: number, staffPasswordDto: StaffPasswordDto){
+
+    const staff = await this.findOne(id)
+    console.log(staff);
+    if(!staff){
+      throw new UnauthorizedException("Bunday id li foydalanuvchi yo'q")
+    }
+    const comparePassword = await bcrypt.compare(staffPasswordDto.old_password, staff.hashed_password)
+    if(!comparePassword){
+      throw new BadRequestException("Parolni xato kiritdingiz")
+    }
+
+    const password = await bcrypt.hash(staffPasswordDto.new_password, 7)
+
+    staff.hashed_password = password
+    await staff.save()
+    return {
+      message: "parol muvafaqqiyatli o'zgartirildi"
+    }
   }
 
   async newOtp(phoneStaffDto: PhoneStaffDto) {

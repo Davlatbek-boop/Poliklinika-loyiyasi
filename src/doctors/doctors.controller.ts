@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { DoctorsService } from './doctors.service';
@@ -29,6 +30,32 @@ export class DoctorsController {
     return this.doctorsService.findAll();
   }
 
+ @Get('top-revenue')
+  async getTopRevenueDoctors() {
+    return this.doctorsService.getDoctorsBySpecialization();
+  }
+
+  @Get('male-patients')
+  async getMalePatientsByDoctorAndDate(
+    @Query('email') doctorEmail: string,
+    @Query('date') date: string,
+  ) {
+    return this.doctorsService.getMalePatientsByDoctorAndDate(
+      doctorEmail,
+      date,
+    );
+  }
+
+
+   @Get('this-day/patients/:id')
+  async getMalePatientsByDoctorThisDay(@Param('id') id: string) {
+    return this.doctorsService.getMalePatientsByDoctorThisDay(+id);
+  }
+  
+
+  
+  
+
   @UseGuards(DoctorGuard)
   @UseGuards(AuthGuard)
   @Get(':id')
@@ -36,6 +63,8 @@ export class DoctorsController {
   findOne(@Param('id') id: string) {
     return this.doctorsService.findOne(+id);
   }
+
+   
 
   @UseGuards(DoctorGuard)
   @UseGuards(AuthGuard)
@@ -53,4 +82,6 @@ export class DoctorsController {
   remove(@Param('id') id: string) {
     return this.doctorsService.remove(+id);
   }
+
+
 }
